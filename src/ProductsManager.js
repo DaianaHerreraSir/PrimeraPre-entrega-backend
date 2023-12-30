@@ -8,10 +8,9 @@ export class ProductManager {
       this.products=[];
     }
   
-  
-  addProduct = async ({title, description, price, thumbnail,code,stock,status,category})=>{
-if(!title || !description || !price || !thumbnail || !code || !stock || !status || !category){
-  return "todos los campos son obligatorio"
+addProduct = async ({title, description, price, thumbnail,code,stock,status,category})=>{
+if(!title || !price ){
+  return"El título y el precio son obligatorios"
 }
     const id= uuidv4()
     
@@ -27,21 +26,25 @@ if(!title || !description || !price || !thumbnail || !code || !stock || !status 
       status,
       category,
     };
-
+try{
     this.products= await this.getProducts()
     this.products.push(newProduct)
   
     await fs.writeFile(this.path, JSON.stringify(this.products, null, 2, 'utf-8'))
 
     return newProduct
-  }
-
+  
+}catch (error) {
+  console.error('Error en addProduct:', error);
+  throw error; // Puedes decidir lanzar el error nuevamente o manejarlo de otra manera
+}}
   getProducts = async ()=>{
     const response= await fs.readFile(this.path, "utf-8")
     const responseJSON= JSON.parse(response)
 
     return responseJSON
   }
+ 
 
   getProductsById= async (id)=>{
     const response= await this.getProducts()
